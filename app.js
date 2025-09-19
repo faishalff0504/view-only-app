@@ -1,10 +1,8 @@
 // app.js - Frontend JavaScript untuk Aplikasi Form Order WhatsApp (Grup Version)
 
 const API_BASE_URL = window.location.hostname === 'localhost' 
-
     ? 'http://localhost:3000' 
-
-    : 'https://67a5c1c179cf.ngrok-free.app';
+    : 'https://125eeb583ffc.ngrok-free.app';
 
 // Elemen UI untuk status WhatsApp
 const whatsappStatus = document.createElement('div');
