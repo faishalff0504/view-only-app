@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Form Order WhatsApp</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+
+<!-- PWA Meta Tags -->
+<meta name="theme-color" content="#25D366">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="OrderWA">
+
+<!-- Manifest -->
+<link rel="manifest" href="/manifest.json">
+
+<!-- Icons -->
+<link rel="icon" href="/icon-192.png">
+<link rel="apple-touch-icon" href="/icon-192.png">
+
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="app-title">
+                <h1>Form Order Pesanan</h1>
+                <p>Jersey Sidoarjo</p>
+            </div>
+            <div class="user-actions">
+                <button class="btn btn-primary" id="report-btn"><i class="fas fa-chart-bar"></i> Laporan</button>
+                <button class="btn btn-info" id="login-btn">Login</button>
+            </div>
+        </header>
+        
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-value" id="total-orders">0</div>
+                <div class="stat-label">Total Pesanan</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="antri-orders">0</div>
+                <div class="stat-label">Dalam Antrian</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="proses-orders">0</div>
+                <div class="stat-label">Dalam Proses</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="selesai-orders">0</div>
+                <div class="stat-label">Selesai</div>
+            </div>
+        </div>
+        
+        <div class="filters">
+            <div class="filter-group">
+                <label for="month-filter">Filter Bulan:</label>
+                <select id="month-filter">
+                    <option value="">Semua Bulan</option>
+                    <option value="1">Januari</option>
+                    <option value="2">Februari</option>
+                    <option value="3">Maret</option>
+                    <option value="4">April</option>
+                    <option value="5">Mei</option>
+                    <option value="6">Juni</option>
+                    <option value="7">Juli</option>
+                    <option value="8">Agustus</option>
+                    <option value="9">September</option>
+                    <option value="10">Oktober</option>
+                    <option value="11">November</option>
+                    <option value="12">Desember</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label for="status-filter">Filter Status:</label>
+                <select id="status-filter">
+                    <option value="">Semua Status</option>
+                    <option value="antri">Antri</option>
+                    <option value="proses">Proses</option>
+                    <option value="selesai">Selesai</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label for="search">Cari Customer:</label>
+                <input type="text" id="search" placeholder="Nama customer...">
+            </div>
+        </div>
+        
+        <div class="orders-container" id="orders-list">
+            <!-- Data order akan dimuat di sini oleh JavaScript -->
+        </div>
+    </div>
+    
+    <!-- Modal untuk edit data -->
+    <div class="modal" id="edit-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Pesanan</h2>
+                <span class="close" id="close-edit">&times;</span>
+            </div>
+            <form id="edit-form">
+                <input type="hidden" id="edit-id">
+                <div class="form-group">
+                    <label for="edit-customer">Customer:</label>
+                    <input type="text" id="edit-customer" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-pesanan">Pesanan:</label>
+                    <input type="text" id="edit-pesanan" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-jenis">Jenis Pesanan:</label>
+                    <input type="text" id="edit-jenis" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-jumlah">Jumlah:</label>
+                    <input type="number" id="edit-jumlah" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-keterangan">Keterangan:</label>
+                    <textarea id="edit-keterangan"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="edit-kain-jersey">Kain Jersey:</label>
+                    <input type="text" id="edit-kain-jersey">
+                </div>
+                <div class="form-group">
+                    <label for="edit-kain-celana">Kain Celana:</label>
+                    <input type="text" id="edit-kain-celana">
+                </div>
+                <div class="form-group">
+                    <label for="edit-catatan">Catatan:</label>
+                    <textarea id="edit-catatan"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="edit-tanggal">Tanggal:</label>
+                    <input type="date" id="edit-tanggal" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-status">Status:</label>
+                    <select id="edit-status">
+                        <option value="antri">Antri</option>
+                        <option value="proses">Proses</option>
+                        <option value="selesai">Selesai</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Modal untuk laporan -->
+    <div class="modal" id="report-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Laporan Bulanan</h2>
+                <span class="close" id="close-report">&times;</span>
+            </div>
+            <div class="form-group">
+                <label for="report-month">Pilih Bulan:</label>
+                <select id="report-month">
+                    <option value="1">Januari</option>
+                    <option value="2">Februari</option>
+                    <option value="3">Maret</option>
+                    <option value="4">April</option>
+                    <option value="5">Mei</option>
+                    <option value="6">Juni</option>
+                    <option value="7">Juli</option>
+                    <option value="8">Agustus</option>
+                    <option value="9">September</option>
+                    <option value="10">Oktober</option>
+                    <option value="11">November</option>
+                    <option value="12">Desember</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="report-year">Tahun:</label>
+                <input type="number" id="report-year" value="2023" min="2020" max="2030">
+            </div>
+            <button class="btn btn-primary" id="generate-report">Generate Laporan</button>
+            <div id="report-result" style="margin-top: 20px;"></div>
+        </div>
+    </div>
+    
+    <!-- Notifikasi -->
+    <div class="notification" id="notification">
+        <i class="fas fa-check-circle"></i> <span id="notification-text">Operasi berhasil</span>
+    </div>
+    
+    <!-- Tombol WhatsApp -->
+    <button class="whatsapp-btn" id="whatsapp-btn">
+        <i class="fab fa-whatsapp"></i>
+    </button>
+
+  <button id="installButton" style="display: none; position: fixed; bottom: 180px; right: 20px; z-index: 1000; background: #25D366; color: white; border: none; border-radius: 50%; width: 60px; height: 60px; font-size: 24px;">
+    📱
+</button>
+
+    <!-- File JavaScript -->
+    <script src="app.js"></script>
+
+    <!-- Modal Detail Order -->
+<div class="detail-modal" id="detail-modal">
+    <div class="detail-modal-content" id="detail-content">
+        <!-- Content akan diisi oleh JavaScript -->
+    </div>
+</div>
+
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js').then(registration => {
+    console.log('Service Worker registered:', registration);
+
+    // Cek jika SW baru ditemukan
+    registration.addEventListener('updatefound', () => {
+      const newWorker = registration.installing;
+      newWorker.addEventListener('statechange', () => {
+        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+          // Ada versi baru siap
+          showUpdateButton(registration);
+        }
+      });
+    });
+  });
+
+  // Reload otomatis setelah SKIP_WAITING
+  let refreshing;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (refreshing) return;
+    refreshing = true;
+    window.location.reload();
+  });
+}
+
+function showUpdateButton(registration) {
+  // Buat tombol di tengah bawah
+  const btn = document.createElement('button');
+  btn.textContent = 'Update tersedia – klik untuk update';
+  btn.style.position = 'fixed';
+  btn.style.bottom = '15px';
+  btn.style.left = '50%';
+  btn.style.transform = 'translateX(-50%)';  // pusat horizontal
+  btn.style.padding = '12px 20px';
+  btn.style.background = '#25D366';
+  btn.style.color = '#fff';
+  btn.style.border = 'none';
+  btn.style.borderRadius = '8px';
+  btn.style.fontSize = '14px';
+  btn.style.zIndex = '9999';
+  btn.style.cursor = 'pointer';
+  document.body.appendChild(btn);
+
+  btn.addEventListener('click', () => {
+    if (registration.waiting) {
+      registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+    }
+  });
+}
+</script>
+
+</body>
+
+
+</html>
